@@ -24,8 +24,13 @@ O `reanchor` e o `init` procuram, nesta ordem:
 
 1. uma linha `auttares-colab:reanchor <caminho>` no arquivo de instruções do agente (`CLAUDE.md`,
    `AGENTS.md`), se existir;
-2. arquivos rastreados `REANCHOR.md` (`git ls-files`) ou, sem Git, arquivos `REANCHOR.md` fora de
+2. arquivos `REANCHOR.md` no repositório, **rastreados ou não**:
+   `git ls-files --cached --others --exclude-standard`. Sem Git, arquivos `REANCHOR.md` fora de
    diretórios de build e dependências.
+
+Um REANCHOR que existe só na árvore de trabalho (por exemplo, logo depois do `init`, antes do
+commit) **é usado**. O pacote o declara **não publicado**, e o envelhecimento fica UNVERIFIABLE. Um
+repositório sem nenhum commit é declarado assim; não há HEAD a citar.
 
 O resultado é um destes:
 

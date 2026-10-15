@@ -47,6 +47,8 @@ Ache o REANCHOR (`continuity.md` §1.1).
   **Não fabrique um pacote.**
 - **Vários REANCHORs:** CONFLICT, conforme §1.1.
 - **Sem marcador:** é legado e compatível. Use-o e diga isso.
+- **Só na árvore de trabalho (não comitado):** use-o normalmente e declare-o **não publicado**. Isso
+  não é motivo para recusar o pacote.
 
 ## 3. Proveniência (sempre, antes de ler o resto)
 
