@@ -1,0 +1,9 @@
+{
+  "name": "auttares-colab",
+  "version": "0.1.0",
+  "description": "Collaborative engineering continuity for a Human Owner, an AI architectural reviewer and an execution agent: initialize a project's REANCHOR and generate repository-grounded handoff packages.",
+  "author": {
+    "name": "JoaoBueno"
+  },
+  "keywords": ["collaboration", "continuity", "handoff", "reanchor", "architecture-review"]
+}
