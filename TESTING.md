@@ -28,3 +28,23 @@ projetos de teste foi simulada por mensagem explícita.
 
 Limitação observada: uma sessão rotulou como VERIFIED FACT um detalhe errado (a posição de uma
 linha num arquivo). As marcas de evidência reduzem, mas não eliminam, o erro do modelo.
+
+## Instalação no escopo de usuário (2026-10-18, Claude Code 2.1.302, WSL/Linux)
+
+`claude plugin marketplace add <este repositório> --scope user` e
+`claude plugin install auttares-colab@auttares --scope user`. Depois, sessões **novas**
+(`claude -p`), **sem** `--plugin-dir`:
+
+| Teste | Onde | Resultado |
+|---|---|---|
+| I1 | projeto maduro, `reanchor xyz` | só a linha de uso |
+| I2 | projeto temporário isolado, `reanchor deep` | pediu o tema e parou |
+| I3 | o mesmo, sem REANCHOR, `reanchor` | "não inicializado, rode o init"; nenhum pacote |
+| I4 | o mesmo, `init` | proposta com as fontes, um CONFLICT real (roadmap "feito" contra código vazio), perguntas; nada escrito |
+| I5 | aprovação simulada | `REANCHOR.md` com marcador, `colab-watch` e CP-001 |
+| I6 | CP-001 fechada (ADR aceito, entrada removida, nota de revisão que cita a CP-001 comitada) | "nenhuma discussão aberta"; a conclusão, as razões e as alternativas na seção D; a nota de revisão não ressuscitou a entrada |
+| I7 | projeto maduro, `init` só leitura | REANCHOR legado reconhecido; proposta mínima; nada escrito |
+| I8 | projeto maduro, `reanchor normal`, comparado com o protótipo local `/reanchor` no mesmo estado | mesma base, autorização, obrigações, checkpoint, conflitos e proveniência |
+| I9 | sessão anterior à instalação, retomada (`--resume --fork-session`) | o plugin está disponível |
+
+Os projetos de teste ficaram no diretório temporário da sessão e não são preservados.

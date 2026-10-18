@@ -1,0 +1,15 @@
+{
+  "name": "auttares",
+  "owner": {
+    "name": "JoaoBueno"
+  },
+  "description": "Local marketplace for the Auttares Colab framework (not published).",
+  "plugins": [
+    {
+      "name": "auttares-colab",
+      "source": "./",
+      "description": "Collaborative engineering continuity: initialize a project's REANCHOR and generate repository-grounded handoff packages.",
+      "version": "0.1.0"
+    }
+  ]
+}

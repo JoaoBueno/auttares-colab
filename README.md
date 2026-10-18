@@ -40,6 +40,7 @@ o que é inferência, o que está aberto e o que está em conflito.
 
 ```text
 .claude-plugin/plugin.json      manifesto do plugin (versão 0.1.0)
+.claude-plugin/marketplace.json marketplace local "auttares" (só este plugin, fonte ./)
 protocol/collaboration.md       papéis, autoridade, evidência, sem transcrições
 protocol/continuity.md          REANCHOR, checkpoint rolante, proveniência, pacote
 templates/REANCHOR.md           o modelo que o init preenche
@@ -52,13 +53,27 @@ regras. O conhecimento de cada projeto fica **no próprio projeto**: o Colab nã
 
 ## Instalação local
 
-Sem publicação ainda. Para uma sessão:
+Sem publicação ainda. Este repositório é também um marketplace local (`.claude-plugin/marketplace.json`,
+nome `auttares`), cujo único plugin é a própria raiz. Para instalar no escopo de usuário, o que vale
+para todos os projetos deste usuário nesta instalação do Claude Code:
 
 ```bash
-claude --plugin-dir /caminho/para/auttares-colab
+claude plugin marketplace add /caminho/para/auttares-colab --scope user
+claude plugin install auttares-colab@auttares --scope user
+claude plugin list        # auttares-colab@auttares, Scope: user, Status: enabled
 ```
 
-Instalação permanente, a partir de um marketplace: pendente de publicação (ver "Limitações").
+O Claude Code instala uma **cópia** em `~/.claude/plugins/cache/auttares/auttares-colab/<versão>/`.
+Uma mudança neste repositório só chega à instalação depois de:
+
+```bash
+claude plugin marketplace update auttares
+claude plugin update auttares-colab@auttares
+```
+
+e de reiniciar a sessão (ou `/reload-plugins` numa sessão aberta).
+
+Para uma sessão só, sem instalar: `claude --plugin-dir /caminho/para/auttares-colab`.
 
 ## Uso
 
@@ -110,7 +125,9 @@ casos suportados.
 
 ## Limitações (0.1.0)
 
-- Testado só com o Claude Code 2.1.300 e só por `--plugin-dir`; não foi instalado por marketplace.
+- Testado com o Claude Code 2.1.300 (por `--plugin-dir`) e 2.1.302 (instalado pelo marketplace
+  local, escopo de usuário, no WSL/Linux). A instalação vale para esse usuário nessa instalação:
+  não para o Windows nativo, outra máquina, outra conta nem outros agentes.
 - O fluxo do init é conversacional, em dois passos (proposta, depois aprovação). Não há modo de
   aprovação automática.
 - O envelhecimento depende do Git e da linha `colab-watch`. Ele não sabe nada de conversas fora do
