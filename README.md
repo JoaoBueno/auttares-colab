@@ -63,15 +63,17 @@ claude plugin install auttares-colab@auttares --scope user
 claude plugin list        # auttares-colab@auttares, Scope: user, Status: enabled
 ```
 
-O Claude Code instala uma **cópia** em `~/.claude/plugins/cache/auttares/auttares-colab/<versão>/`.
-Uma mudança neste repositório só chega à instalação depois de:
+Como o marketplace é uma pasta local, o Claude Code **lê o plugin direto deste repositório**
+(`claude plugin list` mostra "Read from: <esta pasta>"; o log de depuração carrega as skills de
+`<esta pasta>/skills`). Consequências:
 
-```bash
-claude plugin marketplace update auttares
-claude plugin update auttares-colab@auttares
-```
+- uma mudança aqui, comitada **ou não**, vale para todos os projetos a partir da **próxima sessão**
+  (ou de `/reload-plugins` numa sessão aberta). `claude plugin update` responde "nothing to update";
+- não deixe trabalho incompleto na árvore deste repositório: ele já está em uso;
+- mover ou apagar esta pasta quebra a instalação.
 
-e de reiniciar a sessão (ou `/reload-plugins` numa sessão aberta).
+Ele também guarda uma cópia em `~/.claude/plugins/cache/auttares/`, que as sessões não usam para
+as skills.
 
 Para uma sessão só, sem instalar: `claude --plugin-dir /caminho/para/auttares-colab`.
 
