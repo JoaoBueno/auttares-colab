@@ -1,37 +1,36 @@
 # Auttares Colab
 
-**Keep a software project's technical and intellectual context recoverable across AI
-conversations.**
+**A continuity framework for collaborative software engineering with AI agents.**
 
-Auttares Colab is a small Claude Code plugin for engineering work shared by three parties:
+Auttares Colab helps a human owner, an AI reviewer and an execution agent preserve engineering
+decisions, recover project context and resume work across conversations and sessions. It is a
+small [Claude Code](https://code.claude.com) plugin with two skills.
 
-- the **Human Owner**, who decides, authorizes and accepts;
-- an **AI Reviewer** (for example ChatGPT), who discusses architecture, reviews results and keeps
-  the reasoning;
-- an **Execution Agent** (for example Claude Code), who examines the repository, implements what
-  was authorized and produces evidence.
+Its purpose is not to save conversation summaries. It preserves **verified project context**, the
+**rationale of decisions**, **authorization boundaries**, and the **intellectual discussions that
+are genuinely still open**.
 
-Status: **0.1.1, experimental, not yet publicly released.** No license has been chosen yet (see
-[License](#license)).
+> **Status: 0.1.1, experimental.** Tested on Linux with Claude Code 2.1.300–2.1.303. Expect
+> rough edges and changes. See [Limitations](#limitations).
 
 ## The problem
 
 Long AI conversations lose the thread. A new conversation does not know where the project stands,
-which decisions hold, what is authorized, or what was still under discussion. Pasting the old
+which decisions hold, what is authorized, or what was still being discussed. Pasting an old
 transcript is expensive and brings back everything that was already superseded. An old copy of a
 summary is worse: it looks current.
 
 Auttares Colab addresses this with two pieces:
 
-1. **A `REANCHOR.md` inside the project.** A short entry point that **points** to the authoritative
-   sources the project already has (README, ADRs, roadmap, reviews) and keeps a **rolling
-   intellectual checkpoint**: only the discussions that are still open.
-2. **A reanchoring package generated from the real repository.** The agent reads the current state
-   (Git, documents, the REANCHOR), records where the information came from (HEAD, remote, working
-   tree, hash of the REANCHOR read, staleness) and produces a self-contained report to paste into a
-   new reviewer conversation.
+1. **A `REANCHOR.md` inside the project.** A short entry point that **points** to the
+   authoritative sources the project already has (README, decision records, roadmap, reviews) and
+   keeps a **rolling intellectual checkpoint**: only the discussions that are still open.
+2. **A reanchoring package generated from the real repository.** The agent reads the current
+   state (Git, documents, the REANCHOR), records where each fact came from (HEAD, remote, working
+   tree, hash of the REANCHOR it read, staleness), and produces a self-contained report that you
+   paste into a new conversation with your reviewer.
 
-### How this differs from agent instructions
+### Continuity is not agent instructions
 
 Files such as `CLAUDE.md` or `AGENTS.md` tell an agent **how to work**. Auttares Colab preserves
 **where the project is and why**, for a reviewer that has **no** access to the repository, with
@@ -45,21 +44,23 @@ explicit evidence labels:
 | OPEN QUESTION | not answered by the sources |
 | CONFLICT | two sources, or a source and a verified fact, disagree |
 
-## The collaboration model
+## Collaboration model
 
-- The Owner has final authority over architecture, important decisions, implementation
-  authorization, governance and acceptance.
-- The Reviewer and the Agent **propose**; neither turns a proposal into a decision.
-- The project's existing governance stays in force. Colab adds continuity; it does not replace
-  decision records or processes.
-- No conversation transcript is ever archived, and no history is invented: a gap is written as a
-  gap.
+| Role | Responsibility |
+|---|---|
+| **Human Owner** | decides architecture and governance, authorizes implementation, accepts work. Holds final authority |
+| **AI Reviewer** (for example a chat assistant) | discusses architecture, reviews results, keeps the reasoning, proposes opening and closing discussions |
+| **Execution Agent** (for example Claude Code) | examines the repository, implements what was authorized, produces verified evidence |
+
+Authorization stays human: the reviewer and the agent **propose**, and neither turns a proposal
+into a decision. A reanchoring package never authorizes work. The project's existing governance
+stays in force; Colab adds continuity and does not replace decision records or processes.
 
 The full rules are in [`protocol/collaboration.md`](protocol/collaboration.md) and
 [`protocol/continuity.md`](protocol/continuity.md). Both skills read those files; neither
 redefines them.
 
-## The two skills
+## Features
 
 ### `/auttares-colab:init [notes]`
 
@@ -67,133 +68,156 @@ Prepares a project, in three phases:
 
 1. **Discovery (read-only).** Git, README, manifests, agent instructions, architecture, roadmap,
    decisions, validation and documented open questions.
-2. **Proposal.** What is already enough, what is missing, and exactly what it would create or change
-   (the REANCHOR, its `colab-language` and `colab-watch` lines, checkpoint entries, an optional
-   discovery line). Gaps become questions to the Owner. **It stops and asks for approval.**
-3. **Application**, only after the Owner approves in a later message. It writes a `REANCHOR.md`
-   filled with real evidence. Nothing is invented. An empty project gets an honest page that says
-   there is no history yet.
+2. **Proposal.** What is already enough, what is missing, and exactly what it would create or
+   change: the REANCHOR, its `colab-language` and `colab-watch` lines, checkpoint entries, an
+   optional discovery line. Gaps become questions to you. **It stops and asks for approval.**
+3. **Application**, only after you approve in a later message. It writes a `REANCHOR.md` filled
+   with real evidence. Nothing is invented; a gap is written as a gap.
 
-Running it again on an initialized project changes nothing unless an adjustment is needed and
-approved. `init` never commits: committing the REANCHOR is the Owner's decision, and it is what
-lets `reanchor` measure staleness.
+Running it again on an initialized project proposes only the adjustments that are needed. `init`
+never commits: committing the REANCHOR is your decision, and it is what lets `reanchor` measure
+staleness.
 
 ### `/auttares-colab:reanchor [normal | trajectory | deep <topic>]`
 
-Generates the reanchoring package, read-only:
+Generates the reanchoring package, read-only, in one of three modes:
 
-- **normal** (default): state, the decisions that constrain the work, planned versus authorized,
-  the open checkpoint, obligations, and where to continue;
-- **trajectory**: also the reasons, the rejected alternatives and the changes of course;
-- **deep `<topic>`**: one topic, with its evidence.
+| Mode | Contains |
+|---|---|
+| **NORMAL** (default) | state, the decisions that constrain the current work, planned versus authorized, the open checkpoint, obligations, and where to continue |
+| **TRAJECTORY** | NORMAL plus the reasons, the rejected alternatives and the changes of course |
+| **DEEP `<topic>`** | one topic, with its evidence, and what was and was not read |
 
-Paste the output into a new conversation with the reviewer.
+Every package starts with its provenance: repository, branch, HEAD, the cached and the actual
+remote state, uncommitted changes, the commit and sha256 of the REANCHOR read, and whether the
+snapshot is CURRENT, STALE or UNVERIFIABLE.
 
-## The rolling checkpoint
+## The rolling intellectual checkpoint
 
-An entry `CP-nnn` **enters** when an intellectual question needs continuity. It **is rewritten**
-when the understanding changes materially. It **closes** when the central question is resolved:
-the conclusion goes, with its reason, to the project's decision record. Then it **leaves** the
-checkpoint; its history stays in the decision record and in Git. A closed entry **reopens** only
-with a genuinely new question. It is not a diary, a backlog or a transcript.
+The checkpoint is the project's current intellectual working set, not a diary, a backlog or a
+transcript.
 
-## Project memory stays in the project
+- **Enter.** A genuinely unresolved question that needs future reasoning gets a stable `CP-nnn`
+  entry: the question, the current understanding, the documented alternatives, what is missing,
+  and what would close it.
+- **Update.** When the understanding changes materially, the entry is **rewritten**, not appended
+  to. The checkpoint holds the current understanding, not the history of formulations.
+- **Close.** When the central question is resolved and the owner accepts the outcome, the durable
+  conclusion goes, with its reasons and rejected alternatives, to the project's decision record.
+- **Leave.** The closed entry is removed from the checkpoint. Its conclusion stays in the decision
+  record and its history in Git, so nothing is lost, and the working set stays small.
+- **Reopen.** Only with a genuinely new question, which cites the earlier conclusion.
 
-Colab keeps nothing about a project outside the project. Each project owns its `REANCHOR.md`, and
-decisions stay where the project already records them (ADRs, decision logs, reviews). The plugin
-holds only the protocol and the two skills. Nothing assumes a language, a documentation layout or a
-methodology: a project with ADRs, one with only a README, and an empty one are all supported.
-
-## Language
-
-The collaboration language is stored in the REANCHOR as `colab-language: <BCP 47 tag>`, for example
-`en` or `pt-BR`. It governs the `init` conversation, the REANCHOR's text, the reanchoring package
-and the guidance to the receiving reviewer. The protocol, the skill instructions, the evidence
-labels and the identifiers stay in English.
-
-- **New projects** default to English. `init` uses a language you state in the notes
-  (`/auttares-colab:init language: pt-BR`), or one the project already declares. Otherwise it
-  proposes one as part of its normal proposal (no extra question): the language of your notes, else
-  the language of the project's documentation, else English. You can change it in your approval
-  reply.
-- **Existing projects** keep their language. A REANCHOR with `colab-language: pt-BR` keeps producing
-  Portuguese packages. A REANCHOR without the line, or with an invalid value, produces packages in
-  the language it is written in; if that cannot be determined, English.
-- A project's own documents are never translated.
-
-Tested: English and Brazilian Portuguese. Other languages use the same mechanism but are untested.
+This is why raw chat transcripts are not needed: what deserves to survive a conversation is the
+reviewed decision, its reasons and what is still open, and those live in the project.
 
 ## Installation
 
-### Local development installation (current)
+Requires [Claude Code](https://code.claude.com) and `git`.
 
-This repository is also a marketplace (`.claude-plugin/marketplace.json`, name `auttares`) whose
-only plugin is the repository root. To install it for every project of your user account:
-
-```bash
-claude plugin marketplace add /path/to/auttares-colab --scope user
-claude plugin install auttares-colab@auttares --scope user
-claude plugin list        # auttares-colab@auttares, Scope: user, Status: enabled
-```
-
-Because the marketplace is a local folder, Claude Code **reads the plugin directly from that
-folder**:
-
-- a change in the folder, committed **or not**, applies to every project from the **next
-  session** (or after `/reload-plugins` in an open session); `claude plugin update` reports
-  "nothing to update";
-- keep unfinished work out of that working tree;
-- moving or deleting the folder breaks the installation.
-
-For a single session without installing: `claude --plugin-dir /path/to/auttares-colab`.
-
-The installation applies to that user account and that Claude Code installation only, not to other
-machines, accounts, operating systems or AI agents.
-
-### Public installation (not available yet)
-
-Once the repository is published, installation from a Git-hosted marketplace is expected to be:
+From your shell:
 
 ```bash
-claude plugin marketplace add <OWNER>/<REPOSITORY> --scope user    # placeholder: not published
+claude plugin marketplace add JoaoBueno/auttares-colab
 claude plugin install auttares-colab@auttares --scope user
 ```
 
-`<OWNER>/<REPOSITORY>` is a placeholder. No public repository exists yet.
-
-## Example
-
-Abridged from an actual test run (see [TESTING.md](TESTING.md)) on a small Node.js project with two
-decision records, one of them still *Proposed*:
+Or inside a Claude Code session:
 
 ```text
-$ /auttares-colab:init
-Collaboration language: English (en). There were no Owner notes, no existing REANCHOR and no
-agent-instruction file; the project's documentation is all in English.
+/plugin marketplace add JoaoBueno/auttares-colab
+/plugin install auttares-colab@auttares
+```
 
-What I found
-| Decision record: docs/decisions/. 0001 (rules in a JSON file) is Accepted; 0002 (case     |
-| sensitivity) is Proposed                                                     DOCUMENTED CLAIM |
-| CONFLICT: README.md and ROADMAP.md describe `check` as released, but src/cli.js only     |
-| prints "not implemented"                                                          CONFLICT |
-| .gitignore lists .env. I did not open it                                     VERIFIED FACT |
+`auttares` is the marketplace name declared in this repository; `auttares-colab` is the plugin.
+Check the result with `claude plugin list` (it shows `auttares-colab@auttares`, enabled). Start a
+new session, or run `/reload-plugins` in an open one, to use the skills.
 
-Proposal: create REANCHOR.md at the repository root, colab-language: en,
-colab-watch: README.md ROADMAP.md package.json src docs/decisions docs/notes,
-and one checkpoint entry:
-  ### CP-001 — Should rules match case-sensitively on case-insensitive file systems?
-  status WAITING_FOR_INPUT ... missing: Git's core.ignorecase measurement (Sam)
-Gaps: 1. Who is the Owner? 2. Is v0.2.0 accepted, given the conflict? 3. What is authorized now?
-Reply approve to apply exactly this proposal, including your answers to the gaps.
+- **Scope.** `--scope user` makes the plugin available in every project of your user account in
+  that Claude Code installation. It is not installed for other operating-system accounts, other
+  machines, or other AI agents.
+- **No GitHub SSH key?** Claude Code tries SSH first. On a machine without a GitHub SSH key, set
+  `CLAUDE_CODE_PLUGIN_PREFER_HTTPS=1` so it clones over HTTPS; the repository is public, so no
+  GitHub account is needed.
 
-> Approve. The Owner is Sam Rivera; v0.2.0 is the baseline; nothing is authorized now.
+### Updates
 
-I created REANCHOR.md at the repository root, exactly as approved. No other file was created or
-changed. It is not committed.
+An installation from GitHub is a cached copy of a released version; it does not follow every
+commit. A new version reaches you when you update:
 
-$ git commit -m "Add REANCHOR"      # the Owner's decision
-$ /auttares-colab:reanchor
+```bash
+claude plugin marketplace update auttares
+claude plugin update auttares-colab@auttares
+```
 
+or when you enable auto-update for the `auttares` marketplace under **Marketplaces** in `/plugin`
+(off by default). Restart the session, or run `/reload-plugins`, after an update.
+
+### Development installation
+
+To work on the framework itself, register a local clone instead. Claude Code then reads the plugin
+**directly from that folder**, so every edit applies at the next session, with no version bump:
+
+```bash
+git clone https://github.com/JoaoBueno/auttares-colab.git
+claude plugin marketplace add ./auttares-colab --scope user
+claude plugin install auttares-colab@auttares --scope user
+```
+
+A user can register only one marketplace named `auttares` at a time: use either the GitHub one or
+a local clone. For a single session without installing, use
+`claude --plugin-dir ./auttares-colab`.
+
+## Quick start
+
+Start in a project repository (here, a fresh one):
+
+```bash
+mkdir my-project && cd my-project && git init
+echo "# my-project: a CLI that converts CSV to JSON" > README.md
+git add README.md && git commit -m "Initial commit"
+claude
+```
+
+1. **Initialize.** In the session, run:
+
+   ```text
+   /auttares-colab:init
+   ```
+
+   It reads the project and answers with a proposal: what it found, the REANCHOR it would
+   create, the collaboration language, and questions about what the repository cannot tell it
+   (who decides, what the accepted baseline is, what is authorized now). Nothing is written yet.
+
+2. **Review and approve.** Answer the questions and approve in your next message, for example:
+
+   ```text
+   Approve. The owner is Dana. There is no accepted baseline yet. Nothing is authorized.
+   ```
+
+   `init` writes `REANCHOR.md`, filled with what it found and your answers, and reports what is
+   still a gap.
+
+3. **Commit the REANCHOR** (your decision):
+
+   ```bash
+   git add REANCHOR.md && git commit -m "Add REANCHOR"
+   ```
+
+4. **Generate a handoff** whenever you move to a new conversation:
+
+   ```text
+   /auttares-colab:reanchor
+   ```
+
+5. **Transfer it.** Copy the whole package into a new conversation with your AI reviewer. Its
+   section J tells the reviewer how to use it: as a dated, repository-anchored report, never as
+   authorization.
+
+An abridged package from a real test run, on a small project with one accepted and one proposed
+decision:
+
+```text
 # Reanchoring package — pathlint
 ## A. Identity and provenance
 - Language: en, from the REANCHOR's colab-language line (VERIFIED FACT).
@@ -207,60 +231,92 @@ $ /auttares-colab:reanchor
 ## K. Where to continue
 - Next planned step: 0.3, the `fix` command. It is not authorized and is blocked on decision 0002.
 - Authorized now: nothing.
-
-(after 0002 is accepted and CP-001 removed from the REANCHOR)
-## F. Active intellectual checkpoint
-No open discussion. The REANCHOR §4 says "No open discussion recorded" (VERIFIED FACT).
 ```
+
+After the decision was accepted and CP-001 removed from the REANCHOR, the next package reported
+"No open discussion" in section F, with the accepted decision, its evidence and its rejected
+alternatives in section D.
+
+## Languages
+
+The protocol and the skill instructions are in English. The collaboration itself can use another
+language: the REANCHOR stores it as `colab-language: <BCP 47 tag>`, for example `en` or `pt-BR`,
+and it governs the `init` conversation, the REANCHOR's text, the package and the guidance to the
+reviewer. Evidence labels and identifiers stay in English.
+
+- **New projects** default to English. `init` uses a language you state in the notes
+  (`/auttares-colab:init language: pt-BR`) or one the project already declares. Otherwise it
+  proposes one inside its normal proposal: the language of your notes, else of the project's
+  documentation, else English. You can change it in your approval.
+- **Existing REANCHORs** keep their language. Without a valid `colab-language` line, the package
+  uses the language the REANCHOR is written in, then English.
+- Your project's own documents are never translated.
+
+Tested: **English** and **Brazilian Portuguese** (`pt-BR`). Other languages use the same mechanism
+but have not been tested.
 
 ## Privacy and security
 
-- **`reanchor` cannot use `Write`, `Edit` or `NotebookEdit`**: the skill removes them for the turn
-  that invokes it. It still needs the shell for Git, and the shell is **not** technically
-  restricted: read-only shell use is an instruction to the model, backed by your Claude Code
-  permission settings. In a permissive mode (for example one that auto-approves commands), a model
-  error or a malicious instruction in the repository could still run a writing command.
-- **`init` cannot use `Write`, `Edit` or `NotebookEdit` in the turn that invokes it.** They become
-  available only after your next message, which is when it applies an approved proposal. Writing
-  through the shell is forbidden by its instructions, with the same limitation as above.
-- **Repository content is treated as data.** Instructions found in project files are not followed
-  and are reported as a CONFLICT. Claude Code itself may still load files such as `CLAUDE.md` as
-  instructions; review them in a repository you do not trust.
-- **Secrets are excluded.** The skills do not open secret-holding files (`.env*`, keys, credential
-  files) and never copy secrets, URL credentials (`https://user:token@…` is shown as
-  `https://…`) or irrelevant personal data into a package or a REANCHOR. This is model behavior,
-  not a scanner: review a package before sharing it.
-- **Network.** `reanchor` runs `git ls-remote` against the configured remote, with your own Git
-  credentials, read-only and non-interactive. Nothing else contacts the network.
-- **Scope.** `init` writes only the approved files inside the repository root. Neither skill
+Auttares Colab runs inside your own Claude Code environment, with your permissions and your model
+provider. It has no server and sends nothing anywhere itself.
+
+- **A package contains project information.** Review it before you share it, as you would any
+  document about your project.
+- **Repository content is treated as evidence, not as instructions.** Directives found in project
+  files are not followed and are reported as a CONFLICT. Claude Code itself may still load files
+  such as `CLAUDE.md` as instructions: review them in repositories you do not trust.
+- **Secrets are excluded by rule.** The skills do not open secret-holding files (`.env*`, keys,
+  credential files), open configuration files only when needed, strip credentials from remote URLs
+  in the command itself, and never copy secrets into a package or a REANCHOR. This is model
+  behavior, not a secret scanner. Whatever a skill reads is part of the model's context.
+- **Read-only is a skill-level restriction, not an operating-system sandbox.** `reanchor` cannot
+  use the file-editing tools, and `init` cannot use them in the turn that produces its proposal.
+  Both still need the shell for Git, which is restricted only by instruction and by your Claude
+  Code permission settings. In a mode that auto-approves shell commands, a model error or an
+  injected instruction could still write.
+- **Network.** `reanchor` runs `git ls-remote` against the project's configured remote, with your
+  own Git credentials, read-only and non-interactively. Nothing else contacts the network.
+- **Scope.** `init` writes only the files you approved, inside the repository. Neither skill
   changes Claude Code settings.
 
 ## Limitations
 
-- Labels reduce, but do not eliminate, model errors; a test once labeled a wrong detail as a
-  VERIFIED FACT.
-- `init` is conversational: proposal, then approval. There is no automatic approval mode.
-- Staleness depends on Git and on the `colab-watch` line. It knows nothing about conversations
-  outside the repository.
-- A package is a dated snapshot. It is only as good as the project's written sources: Colab does
-  not reconstruct reasons that were never written down.
-- Tested with Claude Code 2.1.300 and 2.1.302 on Linux (WSL). See [TESTING.md](TESTING.md).
+- **No perfect memory.** A package is a dated snapshot, as good as the project's written sources.
+  Colab does not reconstruct reasons that were never written down.
+- **No access to unsynchronized conversations.** What exists only in a chat is not recovered.
+  Consolidate what matters into the project at transitions.
+- **No guarantee that a document is current.** Staleness detection covers committed changes in
+  the watched paths; a document outside them, or one that was never updated, can still be wrong.
+  Sources win over summaries, and divergences are reported, not resolved.
+- **No automatic authorization.** Reanchoring never authorizes changes; the owner does.
+- **Model errors remain possible.** Evidence labels reduce, but do not eliminate, mistakes: a test
+  once labeled a wrong detail as a VERIFIED FACT.
+- **Compatibility.** Built and tested for Claude Code on Linux. The package itself is plain text
+  that any reviewer can read, but other agents, other operating systems and interactive-only
+  flows have not been tested. See [TESTING.md](TESTING.md).
 
-## License
+## Project status
 
-No license has been chosen yet. Until the owner chooses one, no rights to use, copy, modify or
-distribute this code are granted beyond those the law provides, and the project should not be
-treated as open source.
+Version 0.1.1 is an **experimental** pre-release. It is not production-proven. Auttares Colab is
+an independent project: it is not affiliated with, sponsored or endorsed by Anthropic or OpenAI.
+Claude and Claude Code are trademarks of Anthropic; ChatGPT is a trademark of OpenAI.
+
+See [CHANGELOG.md](CHANGELOG.md) for changes and [TESTING.md](TESTING.md) for what was tested.
 
 ## Repository layout
 
 ```text
-.claude-plugin/plugin.json       plugin manifest
+.claude-plugin/plugin.json       plugin manifest (name, version, license)
 .claude-plugin/marketplace.json  marketplace "auttares" (this plugin, source ./)
 protocol/collaboration.md        roles, authority, evidence, transcripts, confidentiality
 protocol/continuity.md           REANCHOR, checkpoint, provenance, package, language
 templates/REANCHOR.md            the template init fills in
 skills/init/SKILL.md             /auttares-colab:init
 skills/reanchor/SKILL.md         /auttares-colab:reanchor
-CHANGELOG.md  TESTING.md
 ```
+
+## License
+
+Copyright 2026 JoaoBueno.
+
+Licensed under the Apache License, Version 2.0 (`Apache-2.0`). See [LICENSE](LICENSE).

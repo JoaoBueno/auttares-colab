@@ -8,8 +8,7 @@
     {
       "name": "auttares-colab",
       "source": "./",
-      "description": "Collaborative engineering continuity: initialize a project's REANCHOR and generate repository-grounded handoff packages.",
-      "version": "0.1.1"
+      "description": "A continuity framework for collaborative software engineering with AI agents."
     }
   ]
 }

@@ -1,7 +1,13 @@
 # Changelog
 
-## 0.1.1 — unreleased (local)
+## 0.1.1 — 2026-10-19 (experimental pre-release)
 
+- **First public release**, under the Apache License, Version 2.0 (`LICENSE`; `license`,
+  `homepage` and `repository` in `plugin.json`). Installable from GitHub:
+  `claude plugin marketplace add JoaoBueno/auttares-colab`, then
+  `claude plugin install auttares-colab@auttares --scope user`.
+- The plugin version lives only in `plugin.json` (removed from the marketplace entry, as Claude
+  Code recommends).
 - **English-first.** The protocol, both skills, the REANCHOR template, the README, this changelog
   and the test record are now in English.
 - **Collaboration language** (`continuity.md` §5). `colab-language: <BCP 47 tag>` in the

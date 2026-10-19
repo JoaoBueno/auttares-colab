@@ -1,10 +1,13 @@
 {
   "name": "auttares-colab",
   "version": "0.1.1",
-  "description": "Collaborative engineering continuity for a Human Owner, an AI architectural reviewer and an execution agent: initialize a project's REANCHOR and generate repository-grounded handoff packages.",
+  "description": "A continuity framework for collaborative software engineering with AI agents: initialize a project's REANCHOR and generate repository-grounded handoff packages.",
   "author": {
     "name": "JoaoBueno"
   },
+  "homepage": "https://github.com/JoaoBueno/auttares-colab",
+  "repository": "https://github.com/JoaoBueno/auttares-colab",
+  "license": "Apache-2.0",
   "keywords": [
     "collaboration",
     "continuity",

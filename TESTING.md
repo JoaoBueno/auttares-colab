@@ -29,7 +29,7 @@ so a command outside that set was denied rather than prompted.
 | D1 | `claude plugin validate --strict` on the marketplace, the manifest and the skills | PASS |
 | D2 | the repository cloned to another path, installed from there in an isolated `CLAUDE_CONFIG_DIR` | installed and enabled, 2 skills, no reference to the development path; the real user configuration untouched |
 | D3 | `git archive HEAD` | only the 11 tracked framework files; no `.git`, local settings, environment files or caches |
-| D4 | `file://` Git URL as a marketplace source | **refused by the CLI** ("Invalid marketplace source format"); a GitHub-hosted install remains untested until publication |
+| D4 | `file://` Git URL as a marketplace source | **refused by the CLI** ("Invalid marketplace source format"); use `owner/repo`, an `https://` URL or a path |
 | H1 | consumer repositories before and after all tests | HEAD and status unchanged |
 
 Round-one tests (L1, L4, L6–L9, M3, S1) ran before the S2 privacy fix; the fix changes only the
@@ -67,7 +67,8 @@ the plugin cache.
 
 ## Not tested
 
-- Installation from a published Git host (GitHub); no public repository exists.
+- Installation from GitHub is verified at release time, in an isolated Claude Code
+  configuration; the result is recorded in that release's notes.
 - Languages other than English and Brazilian Portuguese.
 - Interactive sessions (all tests used `claude -p`), `/reload-plugins` in an open session.
 - Operating systems other than Linux (WSL); other AI agents.
