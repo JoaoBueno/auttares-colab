@@ -1,0 +1,14 @@
+# Local agent and editor state: never part of the framework.
+.claude/settings.local.json
+.claude/*.local.*
+# Secrets and environment files must never be committed.
+.env
+.env.*
+*.pem
+*.key
+# Caches and temporary files.
+__pycache__/
+*.pyc
+.DS_Store
+*.tmp
+*.swp

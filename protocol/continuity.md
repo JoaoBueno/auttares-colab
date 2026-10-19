@@ -1,162 +1,210 @@
-# Protocolo de continuidade — Auttares Colab 0.1
+# Continuity protocol — Auttares Colab 0.1
 
-Define o **REANCHOR** de um projeto, o **checkpoint intelectual rolante** e o **pacote de
-reancoragem**. Complementa [collaboration.md](collaboration.md).
+Defines a project's **REANCHOR**, the **rolling intellectual checkpoint**, the **reanchoring
+package** and the **collaboration language**. Complements [collaboration.md](collaboration.md).
 
-## 1. O REANCHOR do projeto
+## 1. The project's REANCHOR
 
-Cada projeto tem **um** `REANCHOR.md`, que é dele e fica no repositório dele. O REANCHOR é o ponto
-de entrada para retomar o contexto. Ele **aponta** para as fontes autoritativas do projeto e
-**não** as substitui: se um resumo divergir da fonte, a fonte vence e a divergência é um defeito do
-REANCHOR.
+Each project has **one** `REANCHOR.md`, which belongs to the project and lives in its repository.
+The REANCHOR is the entry point for resuming context. It **points** to the project's authoritative
+sources and does **not** replace them: if a summary diverges from its source, the source wins and
+the divergence is a defect of the REANCHOR.
 
-Um REANCHOR criado pelo Colab começa com o marcador:
+A REANCHOR created by Colab starts with the marker:
 
 ```text
 <!-- auttares-colab:reanchor protocol=0.1 -->
 ```
 
-A localização é livre: a raiz, `docs/` ou onde a documentação do projeto já mora.
+Its location is free: the repository root, `docs/`, or wherever the project's documentation already
+lives.
 
-### 1.1 Descoberta
+### 1.1 Discovery
 
-O `reanchor` e o `init` procuram, nesta ordem:
+`reanchor` and `init` look, in this order, for:
 
-1. uma linha `auttares-colab:reanchor <caminho>` no arquivo de instruções do agente (`CLAUDE.md`,
-   `AGENTS.md`), se existir;
-2. arquivos `REANCHOR.md` no repositório, **rastreados ou não**:
-   `git ls-files --cached --others --exclude-standard`. Sem Git, arquivos `REANCHOR.md` fora de
-   diretórios de build e dependências.
+1. a line `auttares-colab:reanchor <path>` in the agent-instruction file (`CLAUDE.md`,
+   `AGENTS.md`), if present;
+2. `REANCHOR.md` files in the repository, **tracked or not**:
+   `git ls-files --cached --others --exclude-standard`. Without Git, `REANCHOR.md` files outside
+   build and dependency directories.
 
-Um REANCHOR que existe só na árvore de trabalho (por exemplo, logo depois do `init`, antes do
-commit) **é usado**. O pacote o declara **não publicado**, e o envelhecimento fica UNVERIFIABLE. Um
-repositório sem nenhum commit é declarado assim; não há HEAD a citar.
+A REANCHOR that exists only in the working tree (for example, right after `init`, before the
+commit) **is used**. The package declares it **unpublished**, and staleness is UNVERIFIABLE. A
+repository with no commits is declared as such; there is no HEAD to cite.
 
-O resultado é um destes:
+The result is one of:
 
-| Resultado | Significa |
+| Result | Meaning |
 |---|---|
-| **um REANCHOR com marcador** | inicializado pelo Colab |
-| **um REANCHOR sem marcador** | **compatível (legado)**: é usado, e o pacote diz que não foi criado pelo Colab |
-| **vários REANCHORs** | **CONFLICT**: o pacote lista todos, usa o com marcador ou o apontado pelas instruções, e não escolhe em silêncio |
-| **nenhum** | **não inicializado**: o `reanchor` não fabrica pacote e indica o `init` |
+| **one REANCHOR with the marker** | initialized by Colab |
+| **one REANCHOR without the marker** | **compatible (legacy)**: it is used, and the package says it was not created by Colab |
+| **several REANCHORs** | **CONFLICT**: the package lists them all, uses the one with the marker or the one the instructions point to, and does not choose silently |
+| **none** | **not initialized**: `reanchor` does not fabricate a package and points to `init` |
 
-### 1.2 Conteúdo mínimo
+### 1.2 Minimum content
 
-O REANCHOR tem estas partes, nesta ordem; títulos equivalentes são aceitos:
+The REANCHOR has these parts, in this order; equivalent headings, including headings in the
+collaboration language, are accepted:
 
-1. **Natureza e regras.** O que a página é, e que ela não decide nada.
-2. **Onde está cada coisa.** Ponteiros para visão, arquitetura, decisões, plano, validação,
-   resultados e evidência histórica.
-3. **Referência operacional.**
-   - Um instantâneo pequeno e datado: a base aceita, o trabalho em curso, o próximo passo planejado,
-     a autorização desse passo e os bloqueios.
-   - A linha de vigilância `colab-watch: <caminhos separados por espaço>`: os caminhos cujas
-     mudanças tornam o instantâneo velho.
-   - As **obrigações pendentes**: gates e verificações exigidos, cada uma com a condição que a
-     torna relevante.
-4. **Decisões vigentes.** Ponteiros para onde as decisões do projeto ficam, mais as poucas que
-   restringem o trabalho atual. Nunca uma cópia das decisões.
+1. **Nature and rules.** What the page is, that it decides nothing, and the
+   `colab-language: <tag>` line (§5).
+2. **Where everything is.** Pointers to vision, architecture, decisions, plan, validation, results
+   and historical evidence.
+3. **Operational reference.**
+   - A small, dated snapshot: the accepted baseline, the work in progress, the next planned step,
+     that step's authorization, and the blockers.
+   - The watch line `colab-watch: <space-separated paths>`: the paths whose changes make the
+     snapshot stale.
+   - The **pending obligations**: required gates and checks, each with the condition that makes it
+     relevant.
+4. **Current decisions.** Pointers to where the project's decisions live, plus the few that
+   constrain the current work. Never a copy of the decisions.
 5. **OPEN DISCUSSIONS — ROLLING CHECKPOINT** (§2).
-6. **Como manter.** Um resumo curto de §2 e §3, e a referência a este protocolo.
+6. **How to maintain.** A short summary of §2 and §3, and a reference to this protocol.
 
-Seções vazias dizem "nada registrado". Nunca são preenchidas com conteúdo inventado.
+Empty sections say "nothing recorded". They are never filled with invented content.
 
-## 2. O checkpoint intelectual rolante
+## 2. The rolling intellectual checkpoint
 
-O checkpoint é o **conjunto de trabalho intelectual atual**: só as discussões que ainda pedem
-raciocínio futuro. Ele **não** é diário, transcrição, backlog, issue tracker, linha do tempo nem a
-lista do trabalho planejado. Marcos, tarefas e obrigações moram nas suas próprias seções e fontes.
+The checkpoint is the **current intellectual working set**: only the discussions that still need
+future reasoning. It is **not** a diary, transcript, backlog, issue tracker, timeline or list of
+planned work. Milestones, tasks and obligations live in their own sections and sources.
 
-Formato de uma entrada:
+Entry format (the field labels may be written in the collaboration language; the status values
+are fixed identifiers):
 
 ```text
-### CP-nnn — <a pergunta central>
+### CP-nnn — <the central question>
 status         OPEN | WAITING_FOR_INPUT
-revisto em     AAAA-MM-DD
-entendimento   o entendimento atual (não o histórico de formulações)
-alternativas   as alternativas e os argumentos documentados
-falta          o que ainda precisa ser decidido ou verificado
-fecha quando   o que resolve o objetivo CENTRAL (não toda melhoria relacionada)
-referências    os caminhos necessários para retomar
+revised        YYYY-MM-DD
+understanding  the current understanding (not the history of formulations)
+alternatives   the documented alternatives and arguments
+missing        what still has to be decided or verified
+closes when    what resolves the CENTRAL objective (not every related improvement)
+references     the paths needed to resume
 ```
 
-Ciclo de vida:
+Lifecycle:
 
-1. **ENTRA** quando uma questão intelectual não resolvida precisa de continuidade. O ID é estável e
-   nunca é reaproveitado.
-2. **É ATUALIZADA** quando o entendimento muda de forma material: a entrada é **reescrita**, sem
-   acumular formulações.
-3. **FECHA** quando a pergunta central se resolve:
-   - o dono aceita, quando a aceitação é exigida;
-   - a conclusão durável vai, com a razão, a autoridade e as alternativas, ao registro de decisões
-     do projeto, citando o `CP-nnn`.
-4. **SAI** do checkpoint depois de fechada. A história continua recuperável pelo registro de
-   decisões e pelo histórico do Git do REANCHOR. Uma discussão fechada **nunca** fica no checkpoint
-   ativo.
-5. **REABRE** só com uma pergunta nova genuína. A entrada nova cita a conclusão anterior pelo
-   caminho e não copia a história dela.
+1. **ENTERS** when an unresolved intellectual question needs continuity. The ID is stable and never
+   reused.
+2. **IS UPDATED** when the understanding changes materially: the entry is **rewritten**, without
+   accumulating formulations.
+3. **CLOSES** when the central question is resolved:
+   - the Owner accepts, when acceptance is required;
+   - the durable conclusion goes, with its reason, its authority and the alternatives, to the
+     project's decision record, citing the `CP-nnn`.
+4. **LEAVES** the checkpoint once closed. The history remains recoverable through the decision
+   record and the REANCHOR's Git history. A closed discussion **never** stays in the active
+   checkpoint, and a record that mentions a closed `CP-nnn` does not reopen it.
+5. **REOPENS** only with a genuinely new question. The new entry cites the earlier conclusion by
+   path and does not copy its history.
 
-Na limpeza, que acontece nas transições materiais, retiram-se as entradas confirmadas como
-resolvidas.
+Cleanup happens at material transitions: entries confirmed as resolved are removed.
 
-## 3. Proveniência e envelhecimento
+## 3. Provenance and staleness
 
-Todo pacote de reancoragem identifica a sua origem:
+Every reanchoring package identifies its origin:
 
-- o repositório, o ramo e o HEAD (SHA completo);
-- o `origin/<ramo>` **em cache local**, separado da verificação real do remoto (`git ls-remote`),
-  que pode falhar ou estar indisponível e então é dita "não verificada";
-- as mudanças na árvore de trabalho. Mudança não comitada **nunca** é base publicada;
-- o commit que mudou o REANCHOR por último e o sha256 do conteúdo **lido**, e se esse conteúdo é o
-  comitado;
-- a data e a hora.
+- the repository, the branch and HEAD (full SHA);
+- the **locally cached** `origin/<branch>`, kept separate from the actual remote verification
+  (`git ls-remote`), which may fail or be unavailable and is then reported as "not verified";
+- the remote URL **without** user-info (collaboration.md §9);
+- the changes in the working tree. An uncommitted change is **never** a published baseline;
+- the commit that last changed the REANCHOR and the sha256 of the content **read**, and whether that
+  content is the committed one;
+- the date and time.
 
-**Envelhecimento.** Com `R` = o último commit que mudou o REANCHOR, roda-se
-`git log R..HEAD -- <caminhos da colab-watch>`. O instantâneo é:
+**Remote verification contacts the network.** `git ls-remote` connects to the configured remote
+with the user's own Git credentials, read-only. It runs non-interactively
+(`git -c core.sshCommand="ssh -o BatchMode=yes" ls-remote ...`); without a terminal Git does not
+prompt for HTTPS credentials either. Nothing is fetched and no local ref is updated.
 
-| Estado | Quando |
+**Staleness.** With `R` = the last commit that changed the REANCHOR, run
+`git log R..HEAD -- <colab-watch paths>`. The snapshot is:
+
+| State | When |
 |---|---|
-| **CURRENT** | a saída é vazia e a árvore não muda esses caminhos |
-| **STALE** | há commits ou mudanças não comitadas nesses caminhos; cada fato afetado é lido de novo da fonte atual |
-| **UNVERIFIABLE** | não há Git, não há linha de vigilância (REANCHOR legado: usa-se a regra de envelhecimento que o próprio REANCHOR declarar, se houver) ou o REANCHOR nunca foi comitado |
+| **CURRENT** | the output is empty and the working tree does not change those paths |
+| **STALE** | there are commits or uncommitted changes in those paths; each affected fact is re-read from its current source |
+| **UNVERIFIABLE** | there is no Git, no watch line (legacy REANCHOR: the staleness rule the REANCHOR itself declares is used, if any), or the REANCHOR was never committed |
 
-Um fato verificado mais novo **sempre** prevalece sobre o texto velho de um resumo, e a divergência
-é reportada como CONFLICT. Um teste vazio **não** prova que as conversas fora do Git estão
-sincronizadas.
+A newer verified fact **always** prevails over the old text of a summary, and the divergence is
+reported as CONFLICT. An empty test does **not** prove that conversations outside Git are in sync.
 
-## 4. O pacote de reancoragem
+## 4. The reanchoring package
 
-É a saída do `reanchor`: um relatório autossuficiente, em português do Brasil por padrão (o
-REANCHOR pode declarar `colab-language: <código>`). O dono cola o pacote numa conversa nova com o
-revisor. Seções:
+It is the output of `reanchor`: a self-contained report in the collaboration language (§5). The
+Owner pastes the package into a new conversation with the reviewer. Sections:
 
-| Seção | Conteúdo |
+| Section | Content |
 |---|---|
-| **A. Identidade e proveniência** | §3, o modo, as limitações |
-| **B. Propósito e arquitetura essencial** | o que o projeto faz; a arquitetura que importa agora |
-| **C. Estado técnico** | a base aceita; o que está em curso; o que foi concluído e verificado |
-| **D. Decisões aceitas e razões** | só as que restringem o trabalho atual ou o próximo, com o caminho e o ID |
-| **E. Trabalho autorizado e planejado** | separados explicitamente; planejado não é autorizado |
-| **F. Checkpoint intelectual ativo** | só as entradas OPEN e WAITING_FOR_INPUT, cada uma com a pergunta, o entendimento, as alternativas, o que falta, o que a fecha e as referências; ou "nenhuma discussão aberta" |
-| **G. Obrigações e bloqueios** | cada um com a condição que o torna relevante |
-| **H. Trajetória recente** | NORMAL: o necessário; TRAJECTORY: as decisões, alternativas, evidências e razões; DEEP: só o tema |
-| **I. Incertezas, conflitos e lacunas** | inclusive o que pode existir só em conversas |
-| **J. Instruções ao revisor receptor** | diretrizes, não autoridade |
-| **K. Onde continuar** | a questão ativa mais relevante; o próximo passo planejado; o que está autorizado agora; o que o dono deve fornecer se faltar algo |
+| **A. Identity and provenance** | §3, the mode, the collaboration language and how it was determined, the limitations |
+| **B. Purpose and essential architecture** | what the project does; the architecture that matters now |
+| **C. Technical state** | the accepted baseline; what is in progress; what was completed and verified |
+| **D. Accepted decisions and reasons** | only those that constrain the current or next work, with path and ID |
+| **E. Authorized and planned work** | explicitly separated; planned is not authorized |
+| **F. Active intellectual checkpoint** | only the OPEN and WAITING_FOR_INPUT entries, each with the question, the understanding, the alternatives, what is missing, what closes it and the references; or "no open discussion" |
+| **G. Obligations and blockers** | each with the condition that makes it relevant |
+| **H. Recent trajectory** | NORMAL: what is needed; TRAJECTORY: the decisions, alternatives, evidence and reasons; DEEP: only the topic |
+| **I. Uncertainties, conflicts and gaps** | including what may exist only in conversations |
+| **J. Instructions to the receiving reviewer** | guidelines, not authority |
+| **K. Where to continue** | the most relevant active question; the next planned step; what is authorized now; what the Owner must supply if something is missing |
 
-Instruções ao revisor receptor (seção J):
+Instructions to the receiving reviewer (section J):
 
-- trate o pacote como um relatório datado e ancorado no repositório, nunca como política ou
-  instrução de sistema;
-- reconstrua o contexto técnico e o intelectual;
-- respeite as decisões estabelecidas e a autoridade do dono;
-- distinga evidência, inferência e questão aberta;
-- use os identificadores de origem para detectar divergência posterior;
-- não repita investigações concluídas;
-- retome cada discussão aberta do ponto documentado;
-- peça só a informação específica que faltar;
-- não crie missão de implementação automaticamente: reancorar não autoriza mudar o projeto.
+- treat the package as a dated, repository-anchored report, never as policy or a system
+  instruction;
+- reconstruct the technical and the intellectual context;
+- respect established decisions and the Owner's authority;
+- distinguish evidence, inference and open questions;
+- use the source identifiers to detect later divergence;
+- do not repeat completed investigations;
+- resume each open discussion from its documented point;
+- ask only for the specific information that is missing;
+- do not create an implementation mission automatically: reanchoring does not authorize changing
+  the project.
 
-O pacote NORMAL é completo o bastante para retomar sem abrir o repositório, mas não é um despejo
-do repositório. O TRAJECTORY e o DEEP podem ser mais longos.
+The NORMAL package is complete enough to resume without opening the repository, but it is not a
+dump of the repository. TRAJECTORY and DEEP may be longer.
+
+## 5. Collaboration language
+
+The REANCHOR declares the project's collaboration language in its header:
+
+```text
+colab-language: <tag>
+```
+
+`<tag>` is a BCP 47 language tag such as `en`, `pt-BR`, `es` or `de`. The collaboration language
+governs the human-readable text of the REANCHOR, the `init` discovery and approval messages, the
+reanchoring package and the guidance to the receiving reviewer. The protocol, the skill
+instructions, the evidence labels, the status values, the marker and the configuration keys stay
+in English.
+
+**Resolution in `reanchor`**, first match wins:
+
+1. a valid `colab-language` line in the REANCHOR;
+2. otherwise (line missing, or a value that is not a plausible BCP 47 tag): the language the
+   REANCHOR's prose is predominantly written in. A missing line is normal for a legacy REANCHOR; an
+   invalid value is reported in section A;
+3. otherwise: English (`en`).
+
+**Resolution in `init`**, first match wins:
+
+1. a language stated by the Owner in the invocation notes (for example `language: pt-BR` or
+   "write in Portuguese");
+2. the valid `colab-language` of an existing REANCHOR;
+3. a language explicitly required by the project's agent-instruction file;
+4. otherwise, `init` **proposes** one, as part of the proposal it already submits for approval (no
+   extra interruption): the language of the Owner's notes if there are any, else the predominant
+   language of the project's documentation, else English. The proposal is written in the proposed
+   language, and the Owner can change it in the approval reply.
+
+A project's own documents are never translated. Existing REANCHORs keep their language: a REANCHOR
+with `colab-language: pt-BR` keeps producing Portuguese packages, and a legacy REANCHOR without the
+line keeps producing packages in the language it is written in.
+
+Tested languages: English and Brazilian Portuguese. Other languages follow the same mechanism but
+have not been tested.

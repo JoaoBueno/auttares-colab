@@ -1,69 +1,74 @@
 <!-- auttares-colab:reanchor protocol=0.1 -->
-# REANCHOR — {{NOME DO PROJETO}}
+# REANCHOR — {{PROJECT NAME}}
+
+<!-- Template. `init` writes every human-readable line below in the collaboration language
+     (colab-language) and removes this comment. The marker, `colab-language`, `colab-watch`,
+     `CP-nnn`, the status values and the evidence labels stay as written. -->
 
 ```text
-Natureza:   ponto de entrada para retomar o contexto deste projeto (Auttares Colab, protocolo 0.1).
-            NÃO decide nada. Se esta página divergir de uma fonte citada, a fonte vence e a
-            divergência é um defeito desta página.
-Regras:     nenhuma transcrição de conversa aqui; nenhum histórico inventado; reancorar não
-            autoriza implementação. Quem decide é {{DONO}}.
-Idioma:     colab-language: pt-BR
+Nature:     entry point for resuming this project's context (Auttares Colab, protocol 0.1).
+            It decides NOTHING. If this page diverges from a cited source, the source wins and
+            the divergence is a defect of this page.
+Rules:      no conversation transcripts here; no invented history; reanchoring does not
+            authorize implementation. The decision-maker is {{OWNER}}.
+Language:   colab-language: {{LANGUAGE TAG}}
 ```
 
-## 1. Onde está cada coisa
+## 1. Where everything is
 
-| O quê | Onde |
+| What | Where |
 |---|---|
-| Propósito e visão | {{caminho ou "nada registrado"}} |
-| Arquitetura | {{caminho ou "nada registrado"}} |
-| Decisões | {{caminho do registro de decisões ou "nada registrado"}} |
-| Plano / roadmap | {{caminho ou "nada registrado"}} |
-| Validação e testes | {{como se valida; caminho ou comando documentado}} |
-| Resultados e evidência histórica | {{caminhos; `git log`}} |
-| Instruções do agente | {{CLAUDE.md / AGENTS.md ou "nenhuma"}} |
+| Purpose and vision | {{path or "nothing recorded"}} |
+| Architecture | {{path or "nothing recorded"}} |
+| Decisions | {{path of the decision record or "nothing recorded"}} |
+| Plan / roadmap | {{path or "nothing recorded"}} |
+| Validation and tests | {{how the project validates; documented path or command}} |
+| Results and historical evidence | {{paths; `git log`}} |
+| Agent instructions | {{CLAUDE.md / AGENTS.md or "none"}} |
 
-## 2. Referência operacional
+## 2. Operational reference
 
 ```text
-verificado em        {{AAAA-MM-DD}}, contra o commit {{sha curto}} ({{ramo}})
-base aceita          {{a última versão, tag ou commit aceito, ou "nenhuma ainda"}}
-em curso             {{o trabalho em andamento, ou "nada"}}
-próximo planejado    {{o próximo passo, com a fonte, ou "nada planejado"}}
-autorização          {{AUTORIZADO por <quem, onde> | NÃO autorizado | desconhecido}}
-bloqueios            {{os bloqueios, ou "nenhum registrado"}}
+verified on          {{YYYY-MM-DD}}, against commit {{short sha}} ({{branch}})
+accepted baseline    {{the last accepted version, tag or commit, or "none yet"}}
+in progress          {{the work in progress, or "nothing"}}
+next planned         {{the next step, with its source, or "nothing planned"}}
+authorization        {{AUTHORIZED by <who, where> | NOT authorized | unknown}}
+blockers             {{the blockers, or "none recorded"}}
 ```
 
-`colab-watch: {{caminhos cujas mudanças tornam este instantâneo velho}}`
+`colab-watch: {{paths whose changes make this snapshot stale}}`
 
-**Envelhecimento.** Com `R=$(git log -1 --format=%H -- <este arquivo>)`, rode
-`git log --oneline "$R"..HEAD -- <caminhos da colab-watch>`. Se a saída não for vazia, ou se a
-árvore tiver mudanças nesses caminhos, o instantâneo está velho e as fontes vencem. Uma saída vazia
-não prova que as conversas fora do Git estão sincronizadas.
+**Staleness.** With `R=$(git log -1 --format=%H -- <this file>)`, run
+`git log --oneline "$R"..HEAD -- <colab-watch paths>`. If the output is not empty, or the working
+tree has changes in those paths, the snapshot is stale and the sources win. An empty output does
+not prove that conversations outside Git are in sync.
 
-**Obrigações pendentes** (são obrigações, não discussões):
+**Pending obligations** (these are obligations, not discussions):
 
-- {{obrigação}}: {{condição que a torna relevante}} ({{fonte}}), ou "nenhuma registrada"
+- {{obligation}}: {{condition that makes it relevant}} ({{source}}), or "none recorded"
 
-## 3. Decisões vigentes
+## 3. Current decisions
 
-As decisões moram em {{registro de decisões}}. As que restringem o trabalho atual:
+Decisions live in {{decision record}}. Those that constrain the current work:
 
-- {{ID}}: {{uma linha}} ({{caminho}}), ou "nenhuma decisão registrada ainda"
+- {{ID}}: {{one line}} ({{path}}), or "no decision recorded yet"
 
 ## 4. OPEN DISCUSSIONS — ROLLING CHECKPOINT
 
-Só as discussões que ainda pedem raciocínio. Não é backlog, linha do tempo nem transcrição.
+Only discussions that still need reasoning. Not a backlog, a timeline or a transcript.
 
-{{entradas CP-nnn no formato do protocolo, ou: "Nenhuma discussão aberta registrada."}}
+{{CP-nnn entries in the protocol format, or: "No open discussion recorded."}}
 
-## 5. Como manter
+## 5. How to maintain
 
-- **Entra** uma questão não resolvida que precisa de continuidade, com um ID `CP-nnn` estável.
-- **Atualiza-se** reescrevendo a entrada quando o entendimento muda de forma material.
-- **Fecha-se** quando a pergunta central se resolve: a conclusão durável vai, com a razão, para
-  {{registro de decisões}}, e a entrada **sai** daqui.
-- **Reabre-se** só com uma pergunta nova, citando a conclusão anterior.
-- Atualiza-se nas transições: não a cada mensagem.
-- O dono confirma as decisões. O revisor propõe. O agente aplica dentro de uma missão autorizada.
+- An unresolved question that needs continuity **enters** with a stable `CP-nnn` ID.
+- It **is updated** by rewriting the entry when the understanding changes materially.
+- It **closes** when the central question is resolved: the durable conclusion goes, with its
+  reason, to {{decision record}}, and the entry **leaves** this page.
+- It **reopens** only with a new question, citing the earlier conclusion.
+- Update at transitions, not on every message.
+- The Owner confirms decisions. The reviewer proposes. The agent applies them within an authorized
+  mission.
 
-Protocolo completo: Auttares Colab, `protocol/continuity.md` (versão 0.1).
+Full protocol: Auttares Colab, `protocol/continuity.md` (version 0.1).
